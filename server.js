@@ -27,7 +27,12 @@ app.use('/api/utilities', utilityRoutes);
 app.get('/', (req, res) => {
   res.send('PujoFera API is running...');
 });
-
+app.get('/api/test', (req, res) => {
+  res.json({
+    message: 'Correct server.js is running',
+    time: new Date().toISOString()
+  });
+});
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
