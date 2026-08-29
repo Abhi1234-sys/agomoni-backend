@@ -1,4 +1,4 @@
-```js
+
 // server.js
 
 const express = require('express');
@@ -81,4 +81,4 @@ async function startServer() {
 }
 
 startServer();
-```
+
