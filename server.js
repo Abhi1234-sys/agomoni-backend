@@ -20,9 +20,9 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// Request logger - useful for debugging Render/frontend requests
-app.use((req, res, next) => {
-  console.log(`REQUEST: ${req.method} ${req.originalUrl}`);
+// Request logger
+app.use(function (req, res, next) {
+  console.log('REQUEST:', req.method, req.originalUrl);
   next();
 });
 
@@ -31,52 +31,54 @@ app.use('/api/pujas', pujaRoutes);
 app.use('/api/utilities', utilityRoutes);
 
 // Root route
-app.get('/', (req, res) => {
+app.get('/', function (req, res) {
   res.send('PujoFera API is running...');
 });
 
 // API test route
-app.get('/api/test', (req, res) => {
+app.get('/api/test', function (req, res) {
   res.json({
     message: 'Correct server.js is running',
     time: new Date().toISOString()
   });
 });
 
-// 404 handler - shows exactly which API route was not found
-app.use((req, res) => {
-  console.log(`404: ${req.method} ${req.originalUrl}`);
+// 404 handler
+app.use(function (req, res) {
+  console.log('404:', req.method, req.originalUrl);
 
   res.status(404).json({
     success: false,
-    message: `Route not found: ${req.method} ${req.originalUrl}`
+    message: 'Route not found',
+    method: req.method,
+    path: req.originalUrl
   });
 });
 
 // Error handler
-app.use((err, req, res, next) => {
+app.use(function (err, req, res, next) {
   console.error('Server Error:', err);
 
-  res.status(err.status || 500).json({
+  res.status(500).json({
     success: false,
     message: err.message || 'Internal Server Error'
   });
 });
 
-// Start server after MongoDB connection
-const startServer = async () => {
+// Start server
+async function startServer() {
   try {
     await connectDB();
 
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-      console.log(`API: http://localhost:${PORT}`);
+    app.listen(PORT, function () {
+      console.log('Server running on port ' + PORT);
+      console.log('API server started successfully');
     });
   } catch (error) {
     console.error('Failed to start server:', error);
     process.exit(1);
   }
-};
+}
 
 startServer();
 ```
