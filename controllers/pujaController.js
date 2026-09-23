@@ -1,10 +1,24 @@
 const Puja = require('../models/Puja');
+const NodeCache = require('node-cache');
+
+// Initialize cache with 10 minutes TTL (Time To Live)
+const myCache = new NodeCache({ stdTTL: 600 });
 
 // @desc    Get all pujas
 // @route   GET /api/pujas
 exports.getAllPujas = async (req, res) => {
   try {
+    // 1. Check if data exists in cache
+    if (myCache.has('all_pujas')) {
+      return res.status(200).json(JSON.parse(myCache.get('all_pujas')));
+    }
+
+    // 2. Fetch from MongoDB if cache miss
     const pujas = await Puja.find().sort({ createdAt: -1 });
+
+    // 3. Save result to cache
+    myCache.set('all_pujas', JSON.stringify(pujas));
+
     res.status(200).json(pujas);
   } catch (error) {
     console.error("Error fetching pujas:", error);
@@ -18,6 +32,10 @@ exports.createPuja = async (req, res) => {
   try {
     const newPuja = new Puja(req.body);
     const savedPuja = await newPuja.save();
+
+    // Invalidate cache on new creation
+    myCache.del('all_pujas');
+
     res.status(201).json(savedPuja);
   } catch (error) {
     console.error("Error creating puja:", error);
@@ -40,6 +58,9 @@ exports.updatePuja = async (req, res) => {
       return res.status(404).json({ message: "Puja not found" });
     }
 
+    // Invalidate cache on update
+    myCache.del('all_pujas');
+
     res.status(200).json(updatedPuja);
   } catch (error) {
     console.error("Error updating puja:", error);
@@ -57,6 +78,9 @@ exports.deletePuja = async (req, res) => {
     if (!deletedPuja) {
       return res.status(404).json({ message: "Puja not found" });
     }
+
+    // Invalidate cache on delete
+    myCache.del('all_pujas');
 
     res.status(200).json({ message: "Puja deleted successfully" });
   } catch (error) {
