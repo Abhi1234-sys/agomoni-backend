@@ -166,3 +166,21 @@ exports.deleteToilet = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+//cache warming
+exports.warmUtilityCache = async () => {
+  try {
+    const [restaurants, parkings, toilets] = await Promise.all([
+      Restaurant.find(),
+      Parking.find(),
+      Toilet.find()
+    ]);
+
+    myCache.set('all_restaurants', restaurants);
+    myCache.set('all_parkings', parkings);
+    myCache.set('all_toilets', toilets);
+
+    console.log('🔥 Utility Cache Warmed Successfully!');
+  } catch (error) {
+    console.error('❌ Utility Cache Warming Failed:', error.message);
+  }
+};

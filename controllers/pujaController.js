@@ -88,3 +88,13 @@ exports.deletePuja = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+//cache warming
+export const warmPujaCache = async () => {
+  try {
+    const pujas = await Puja.find();
+    myCache.set('all_pujas', pujas); // অথবা আপনার ব্যবহৃত cache key টি লিখুন
+    console.log('🔥 Puja Cache Warmed Successfully!');
+  } catch (error) {
+    console.error('❌ Puja Cache Warming Failed:', error.message);
+  }
+};

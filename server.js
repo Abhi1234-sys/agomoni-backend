@@ -9,6 +9,8 @@ const connectDB = require('./config/db');
 // Route imports
 const pujaRoutes = require('./routes/pujaRoutes');
 const utilityRoutes = require('./routes/utilityRoutes');
+const { warmPujaCache } = require('./controllers/pujaController');
+const { warmUtilityCache } = require('./controllers/utilityController');
 
 // Load environment variables
 dotenv.config();
@@ -108,6 +110,8 @@ async function startServer() {
       console.log('Server running on port ' + PORT);
       console.log('MongoDB connected successfully');
       console.log('=================================');
+       warmPujaCache();
+       warmUtilityCache();
     });
   } catch (error) {
     console.error('Failed to start server:', error);
