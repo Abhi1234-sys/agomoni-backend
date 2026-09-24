@@ -1,8 +1,8 @@
 const Puja = require('../models/Puja');
 const NodeCache = require('node-cache');
 
-// Initialize cache with 10 minutes TTL (Time To Live)
-const myCache = new NodeCache({ stdTTL: 600 });
+// Initialize cache with 5 hour TTL (Time To Live)
+const myCache = new NodeCache({ stdTTL: 18000 });
 
 // @desc    Get all pujas
 // @route   GET /api/pujas
